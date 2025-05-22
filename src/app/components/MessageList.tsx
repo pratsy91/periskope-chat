@@ -163,7 +163,7 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
                     }
                   >
                     {!isCurrentUser && (
-                      <div className="text-xs font-medium text-[#25d366] mb-1">{displayName}</div>
+                      <div className="text-xs font-medium text-[#04904d] mb-1">{displayName}</div>
                     )}
                     {msg.attachment_url ? (
                       msg.attachment_type?.startsWith('image/') ? (

@@ -1,5 +1,6 @@
 import { FaUserCircle, FaSearch, FaEllipsisV, FaUsers } from "react-icons/fa";
 import { useState } from "react";
+import { BsStars } from "react-icons/bs";
 
 interface ChatHeaderProps {
   chatName: string | null;
@@ -81,6 +82,7 @@ export default function ChatHeader({
             )}
           </div>
         )}
+        <BsStars size={18} className="text-[#5d6873]"/>
         {showSearch ? (
           <div className="relative">
             <input

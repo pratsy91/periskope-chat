@@ -2,6 +2,8 @@ import { FaUserCircle, FaBellSlash, FaQuestionCircle, FaCog, FaDownload, FaMagic
 import { SiGooglemessages } from "react-icons/si";
 import { AiFillMessage } from "react-icons/ai";
 import { LuRefreshCcwDot } from "react-icons/lu";
+import { GoDesktopDownload } from "react-icons/go";
+import { BsStars } from "react-icons/bs";
 interface TopBarProps {
   username: string | null;
   showLogout: boolean;
@@ -39,7 +41,7 @@ export default function TopBar({ username, showLogout, onToggleLogout, onLogout 
         </div>
         <div className="flex items-center gap-1 bg-white border border-[#e6e6e6]
          px-2 py-1 rounded cursor-pointer hover:bg-[#f7f8fa] text-[#384555]">
-          <FaDownload size={18} />
+          <GoDesktopDownload size={18} />
         </div>
         <div className="flex items-center gap-1 bg-white border border-[#e6e6e6] 
         px-2 py-1 rounded cursor-pointer hover:bg-[#f7f8fa] text-[#384555]">
@@ -47,6 +49,7 @@ export default function TopBar({ username, showLogout, onToggleLogout, onLogout 
         </div>
         <div className="flex items-center gap-1 bg-white border border-[#e6e6e6]
          px-2 py-1 rounded cursor-pointer hover:bg-[#f7f8fa] text-[#384555]">
+          <BsStars size={18} className="text-[#efbf00]"/>
           <FaList size={18} />
         </div>
         <span className="text-[#888] cursor-pointer ml-2" onClick={onToggleLogout}>

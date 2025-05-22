@@ -1,8 +1,11 @@
 import { useRef } from 'react';
 import { FaSmile, FaPaperclip, FaMicrophone, FaRegPaperPlane, FaClock, FaSyncAlt, FaMagic, FaList } from "react-icons/fa";
-import { CiFaceSmile } from "react-icons/ci";
-import { CiClock2 } from "react-icons/ci";
-import { PiClockClockwiseLight } from "react-icons/pi";
+import { FiSmile, FiClock } from "react-icons/fi";
+import { BsStars } from "react-icons/bs";
+import { MdAttachFile } from "react-icons/md";
+import { PiClockClockwiseBold } from "react-icons/pi";
+import { RiFileList2Fill } from "react-icons/ri";
+import { IoSendSharp } from "react-icons/io5";
 interface MessageInputProps {
   message: string;
   onMessageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -29,7 +32,7 @@ export default function MessageInput({
           className="flex-1 border-none outline-none bg-transparent text-[#222] text-base placeholder:text-[#b0b0b0]"
         />
         <button type="submit" className="ml-2 bg-transparent p-2 rounded-full flex items-center justify-center hover:bg-[#e6f4ea] transition-colors">
-          <FaRegPaperPlane size={28} className="text-[#25d366]" />
+          <IoSendSharp size={28} className="text-[#04904d]" />
         </button>
       </div>
       <div className="flex items-center gap-4 mt-1">
@@ -40,23 +43,23 @@ export default function MessageInput({
           ref={fileInputRef}
           onChange={onFileChange}
         />
-        <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[#222] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <FaPaperclip size={20} />
+        <button type="button" onClick={() => fileInputRef.current?.click()} className="text-[#5d6873] hover:bg-[#f7f8fa] rotate-45 p-2 rounded-full flex items-center justify-center">
+          <MdAttachFile size={20} />
         </button>
         <button type="button" className="text-[#5d6873] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <CiFaceSmile size={20} />
+          <FiSmile size={20} />
         </button>
         <button type="button" className="text-[#5d6873] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <CiClock2 size={20} />
+          <FiClock size={20} />
         </button>
         <button type="button" className="text-[#5d6873] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <PiClockClockwiseLight size={20} />
+          <PiClockClockwiseBold size={20} />
         </button>
         <button type="button" className="text-[#222] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <FaMagic size={20} />
+          <BsStars size={20} />
         </button>
         <button type="button" className="text-[#243445] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
-          <FaList size={20} />
+          <RiFileList2Fill size={20} />
         </button>
         <button type="button" className="text-[#243445] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
           <FaMicrophone size={20} />
