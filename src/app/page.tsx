@@ -515,6 +515,7 @@ export default function ChatsPage() {
             messages={messages}
             currentUserId={userId || ''}
             isLoading={messagesLoading}
+            currentChat={selectedChat ? chats.find(c => c.id === selectedChat) || null : null}
           />
 
           <MessageInput
@@ -543,7 +544,16 @@ export default function ChatsPage() {
           onSelectAddChatUser={handleSelectAddChatUser}
           onRemoveAddChatUser={handleRemoveAddChatUser}
           onCreateAddChat={handleCreateAddChat}
-          onClose={() => setShowAddChatModal(false)}
+          onClose={() => {
+            setShowAddChatModal(false);
+            setAddChatType('direct');
+            setGroupName('');
+            setDirectName('');
+            setLabel('');
+            setAddChatUserSearch('');
+            setAddChatUserResults([]);
+            setSelectedAddChatUsers([]);
+          }}
           onUserSearch={handleAddChatUserSearch}
         />
       )}

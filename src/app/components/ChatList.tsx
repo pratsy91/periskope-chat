@@ -1,14 +1,33 @@
-import { FaUserCircle, FaSearch, FaFilter, FaSave, FaRegPaperPlane } from "react-icons/fa";
-import { useState } from "react";
+import { FaUserCircle, FaSearch, FaFilter, FaSave, FaRegPaperPlane, FaPlus, FaUsers } from "react-icons/fa";
+import { useState, useEffect } from "react";
 import { TbMessageCirclePlus } from "react-icons/tb";
 import { HiFolderArrowDown } from "react-icons/hi2";
 import { IoFilterOutline } from "react-icons/io5";
+import { supabase } from '../hooks/useChats';
 
 interface Chat {
   id: string;
   name: string;
-  last_opened_at?: string | null;
-  labels?: string[];
+  created_at: string;
+  last_message?: string;
+  last_message_time?: string;
+}
+
+interface User {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+interface ChatMember {
+  id: string;
+  username: string;
+  avatar_url: string | null;
+}
+
+interface ChatMemberRow {
+  chat_id: string;
+  users: ChatMember;
 }
 
 interface ChatListProps {
@@ -24,12 +43,6 @@ interface ChatListProps {
   onDeleteChat?: () => void;
 }
 
-function formatDate(dateStr?: string | null) {
-  if (!dateStr) return new Date().toLocaleDateString();
-  const d = new Date(dateStr);
-  return d.toLocaleDateString();
-}
-
 export default function ChatList({
   chats,
   selectedChat,
@@ -42,8 +55,45 @@ export default function ChatList({
   onShowAddChat,
   onDeleteChat,
 }: ChatListProps) {
-  const [directName, setDirectName] = useState("");
-  const [label, setLabel] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+  const [chatMembers, setChatMembers] = useState<Record<string, ChatMember[]>>({});
+  const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+  useEffect(() => {
+    const fetchChatMembers = async () => {
+      const { data, error } = await supabase
+        .from('chat_members')
+        .select(`
+          chat_id,
+          users (
+            id,
+            username,
+            avatar_url
+          )
+        `);
+
+      if (error) {
+        console.error('Error fetching chat members:', error);
+        return;
+      }
+
+      // Organize members by chat
+      const membersByChat = (data as ChatMemberRow[]).reduce((acc, row) => {
+        const chatId = row.chat_id;
+        if (!acc[chatId]) {
+          acc[chatId] = [];
+        }
+        if (row.users) {
+          acc[chatId].push(row.users);
+        }
+        return acc;
+      }, {} as Record<string, ChatMember[]>);
+
+      setChatMembers(membersByChat);
+    };
+
+    fetchChatMembers();
+  }, [chats, userId]);
 
   return (
     <aside className="w-[440px] bg-white border-r border-[#e6e6e6] flex flex-col relative">
@@ -68,44 +118,51 @@ export default function ChatList({
       </div>
       {/* Chat list */}
       <div className="flex-1 overflow-y-auto">
-        {chats
-          .filter(chat => chat.name.toLowerCase().includes(userSearch.toLowerCase()))
-          .length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-[#888] p-8">
-            <FaRegPaperPlane size={48} className="mb-4" />
-            <div className="text-lg font-semibold mb-2">No chats yet</div>
-            <div className="text-sm">Start a new chat using the green + button below!</div>
-          </div>
-        ) : (
-          chats
-            .filter(chat => chat.name.toLowerCase().includes(userSearch.toLowerCase()))
-            .map((chat) => (
-              <div
-                key={chat.id}
-                data-chat-id={chat.id}
-                className={`flex items-center gap-3 px-4 py-3 border-b border-[#f2f2f2] cursor-pointer hover:bg-[#f7f8fa] ${selectedChat === chat.id ? "bg-[#f7f8fa]" : ""}`}
-                onClick={() => onSelectChat(chat.id)}
-              >
-                <span className="text-[#888]"><FaUserCircle size={36} /></span>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-[#222] text-sm">{chat.name}</span>
-                    {chat.labels && chat.labels.length > 0 && (
-                      <div className="flex gap-1">
-                        {chat.labels.map(label => (
-                          <span key={label} className="bg-[#e6f9ec] text-[#25d366] px-2 py-0.5 rounded text-xs font-medium">{label}</span>
-                        ))}
-                      </div>
+        {chats.map((chat) => {
+          const members = chatMembers[chat.id] || [];
+          const isGroup = members.length > 2;
+
+          return (
+            <div
+              key={chat.id}
+              data-chat-id={chat.id}
+              onClick={() => onSelectChat(chat.id)}
+              className={`p-4 border-b border-[#e6e6e6] cursor-pointer hover:bg-[#f7f8fa] ${
+                selectedChat === chat.id ? "bg-[#f7f8fa]" : ""
+              }`}
+            >
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden">
+                  {isGroup ? (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <FaUsers size={24} className="text-[#25d366]" />
+                    </div>
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                      <FaUserCircle size={48} className="text-[#25d366]" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold text-[#222] truncate">{chat.name}</h3>
+                    {chat.last_message_time && (
+                      <span className="text-xs text-[#888] whitespace-nowrap ml-2">
+                        {new Date(chat.last_message_time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
                     )}
                   </div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span></span>
-                    <span className="text-xs text-[#888] ml-2">{formatDate(chat.last_opened_at)}</span>
-                  </div>
+                  {chat.last_message && (
+                    <p className="text-sm text-[#888] truncate">{chat.last_message}</p>
+                  )}
                 </div>
               </div>
-            ))
-        )}
+            </div>
+          );
+        })}
       </div>
       {/* Add Chat Floating Button */}
       <button

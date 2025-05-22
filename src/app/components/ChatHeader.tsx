@@ -1,4 +1,4 @@
-import { FaUserCircle, FaSearch, FaEllipsisV } from "react-icons/fa";
+import { FaUserCircle, FaSearch, FaEllipsisV, FaUsers } from "react-icons/fa";
 import { useState } from "react";
 
 interface ChatHeaderProps {
@@ -9,11 +9,6 @@ interface ChatHeaderProps {
   searchResults?: Array<{ id: string; username: string }>;
   onSelectUser?: (user: { id: string; username: string }) => void;
   onDeleteChat?: () => void;
-}
-
-function getRandomAvatar(seed: string) {
-  // Use randomuser.me for demo avatars
-  return `https://randomuser.me/api/portraits/men/${parseInt(seed, 36) % 100}.jpg`;
 }
 
 export default function ChatHeader({ 
@@ -45,15 +40,13 @@ export default function ChatHeader({
       {/* Left avatar and chat info */}
       <div className="flex items-center gap-3">
         {/* Left avatar */}
-        {leftAvatar ? (
-          <img
-            src={getRandomAvatar(leftAvatar.id)}
-            alt={leftAvatar.username}
-            className="w-9 h-9 rounded-full object-cover bg-gray-200"
-          />
-        ) : (
-          <span className="text-[#888]"><FaUserCircle size={36} /></span>
-        )}
+        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+          {isGroup ? (
+            <FaUsers size={24} className="text-[#25d366]" />
+          ) : (
+            <FaUserCircle size={36} className="text-[#25d366]" />
+          )}
+        </div>
         <div>
           <h1 className="font-semibold text-[#222]">{chatName || "Select a chat"}</h1>
           {userCount > 0 && (
@@ -66,12 +59,12 @@ export default function ChatHeader({
         {isGroup && (
           <div className="flex -space-x-2 mr-2">
             {rightAvatars.map((member) => (
-              <img
+              <div
                 key={member.id}
-                src={getRandomAvatar(member.id)}
-                alt={member.username}
-                className="w-8 h-8 rounded-full border-2 border-white object-cover bg-gray-200"
-              />
+                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white"
+              >
+                <FaUserCircle size={24} className="text-[#25d366]" />
+              </div>
             ))}
             {extraCount > 0 && (
               <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-700 border-2 border-white">
