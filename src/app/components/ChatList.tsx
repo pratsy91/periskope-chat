@@ -107,7 +107,7 @@ export default function ChatList({
     <aside className="w-[440px] bg-white border-r border-[#e6e6e6] flex flex-col relative">
       {/* Custom filter row */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-[#e6e6e6] bg-[#f7f8fa] relative">
-        <p className=" text-[#04904d] px-1 py-1 rounded font-bold text-[16px] flex items-center">
+        <p className=" text-[#04904d] px-1 py-1 rounded font-bold text-[16px] flex items-center gap-1">
           <span><HiFolderArrowDown /></span>Custom filter</p>
         <button className="bg-white text-[#222] p-1 rounded font-medium text-sm flex items-center gap-1">Save</button>
         <div className="flex-1 flex items-center bg-white rounded px-2 py-1 ml-2 relative max-w-[100px]">
