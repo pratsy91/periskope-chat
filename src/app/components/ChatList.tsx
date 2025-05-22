@@ -27,7 +27,11 @@ interface ChatMember {
 
 interface ChatMemberRow {
   chat_id: string;
-  users: ChatMember;
+  users: {
+    id: string;
+    username: string;
+    avatar_url: string | null;
+  };
 }
 
 interface ChatListProps {
@@ -78,13 +82,17 @@ export default function ChatList({
       }
 
       // Organize members by chat
-      const membersByChat = (data as ChatMemberRow[]).reduce((acc, row) => {
+      const membersByChat = (data || []).reduce((acc, row: any) => {
         const chatId = row.chat_id;
         if (!acc[chatId]) {
           acc[chatId] = [];
         }
         if (row.users) {
-          acc[chatId].push(row.users);
+          acc[chatId].push({
+            id: row.users.id,
+            username: row.users.username,
+            avatar_url: row.users.avatar_url
+          });
         }
         return acc;
       }, {} as Record<string, ChatMember[]>);
@@ -135,11 +143,11 @@ export default function ChatList({
                 <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden">
                   {isGroup ? (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUsers size={24} className="text-[#25d366]" />
+                      <FaUsers size={24} />
                     </div>
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUserCircle size={48} className="text-[#25d366]" />
+                      <FaUserCircle size={32} />
                     </div>
                   )}
                 </div>

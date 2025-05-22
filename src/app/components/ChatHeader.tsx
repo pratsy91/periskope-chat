@@ -40,11 +40,15 @@ export default function ChatHeader({
       {/* Left avatar and chat info */}
       <div className="flex items-center gap-3">
         {/* Left avatar */}
-        <div className="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full overflow-hidden">
           {isGroup ? (
-            <FaUsers size={24} className="text-[#25d366]" />
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <FaUsers size={24} />
+            </div>
           ) : (
-            <FaUserCircle size={36} className="text-[#25d366]" />
+            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+              <FaUserCircle size={32} />
+            </div>
           )}
         </div>
         <div>
@@ -61,14 +65,18 @@ export default function ChatHeader({
             {rightAvatars.map((member) => (
               <div
                 key={member.id}
-                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white"
+                className="w-10 h-10 rounded-full overflow-hidden"
               >
-                <FaUserCircle size={24} className="text-[#25d366]" />
+                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                  <FaUserCircle size={32} />
+                </div>
               </div>
             ))}
             {extraCount > 0 && (
-              <div className="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center text-xs text-gray-700 border-2 border-white">
-                +{extraCount}
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-700">
+                  +{extraCount}
+                </div>
               </div>
             )}
           </div>

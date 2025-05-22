@@ -146,11 +146,11 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
                 <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden">
                   {currentChat?.is_group ? (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUsers size={24} className="text-[#25d366]" />
+                      <FaUsers size={24} />
                     </div>
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUserCircle size={32} className="text-[#25d366]" />
+                      <FaUserCircle size={32} />
                     </div>
                   )}
                 </div>
