@@ -13,18 +13,7 @@ import TopBar from './components/TopBar';
 import AddChatModal from './components/AddChatModal';
 import { useChats, supabase } from './hooks/useChats';
 import { useMessages } from './hooks/useMessages';
-
-export async function sendMessage(chatId: string, senderId: string, content: string, attachment_url = '', attachment_type = '') {
-  console.log('Attempting to send message:', { chatId, senderId, content, attachment_url, attachment_type });
-  const { data, error } = await supabase.from("messages").insert([
-    { chat_id: chatId, sender_id: senderId, content, attachment_url, attachment_type }
-  ]);
-  if (error) {
-    console.error('Error sending message:', error);
-  } else {
-    console.log('Message sent successfully:', data);
-  }
-}
+import { sendMessage } from './utils/messages';
 
 export default function ChatsPage() {
   const router = useRouter();
