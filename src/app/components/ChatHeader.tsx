@@ -25,6 +25,8 @@ export default function ChatHeader({
   const [searchQuery, setSearchQuery] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const isGroup = members.length > 2;
   const leftAvatar = members[0];
@@ -36,8 +38,27 @@ export default function ChatHeader({
     onSearchUser?.(e);
   };
 
+  const handleSelectUser = (user: { id: string; username: string }) => {
+    if (members.some(member => member.id === user.id)) {
+      setToastMessage(`${user.username} is already a member of this chat`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      return;
+    }
+    onSelectUser?.(user);
+    setSearchQuery("");
+    setShowSearch(false);
+  };
+
   return (
     <header className="h-[56px] border-b border-[#e6e6e6] bg-white flex items-center justify-between px-4">
+      {/* Toast message */}
+      {showToast && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white px-4 py-2 rounded shadow-lg z-50">
+          {toastMessage}
+        </div>
+      )}
+      
       {/* Left avatar and chat info */}
       <div className="flex items-center gap-3">
         {/* Left avatar */}
@@ -99,11 +120,7 @@ export default function ChatHeader({
                   <div
                     key={user.id}
                     className="p-2 hover:bg-[#f7f8fa] cursor-pointer text-sm flex items-center"
-                    onClick={() => {
-                      onSelectUser?.(user);
-                      setSearchQuery("");
-                      setShowSearch(false);
-                    }}
+                    onClick={() => handleSelectUser(user)}
                   >
                     <span className="text-[#25d366] mr-2"><FaUserCircle size={18} /></span>
                     {user.username}

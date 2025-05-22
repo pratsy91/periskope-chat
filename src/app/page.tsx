@@ -429,6 +429,23 @@ export default function ChatsPage() {
   async function handleAddUserToChat(user: { id: string; username: string }) {
     if (!selectedChat || !userId) return;
 
+    // Check if user is already a member
+    const { data: existingMembers, error: checkError } = await supabase
+      .from("chat_members")
+      .select("user_id")
+      .eq("chat_id", selectedChat)
+      .eq("user_id", user.id);
+
+    if (checkError) {
+      console.error("Error checking existing members:", checkError);
+      return;
+    }
+
+    if (existingMembers && existingMembers.length > 0) {
+      console.log("User is already a member of this chat");
+      return;
+    }
+
     // Add user to chat_members
     const { error } = await supabase
       .from("chat_members")
