@@ -182,6 +182,12 @@ export default function ChatsPage() {
     }
   }, [selectedChat]);
 
+  useEffect(() => {
+    if (selectedChat && !chats.find(c => c.id === selectedChat)) {
+      setSelectedChat(null);
+    }
+  }, [chats, selectedChat]);
+
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!message.trim() || !selectedChat || !userId) {
@@ -198,6 +204,7 @@ export default function ChatsPage() {
       localStorage.clear();
       setUserId("");
       setUsername("");
+      setShowLogout(false);
       router.replace("/login");
     }
   }
@@ -563,12 +570,14 @@ export default function ChatsPage() {
             currentChat={selectedChat ? chats.find(c => c.id === selectedChat) || null : null}
           />
 
-          <MessageInput
-            message={message}
-            onMessageChange={e => setMessage(e.target.value)}
-            onSend={handleSend}
-            onFileChange={handleFileChange}
-          />
+          {selectedChat && (
+            <MessageInput
+              message={message}
+              onMessageChange={e => setMessage(e.target.value)}
+              onSend={handleSend}
+              onFileChange={handleFileChange}
+            />
+          )}
         </main>
       </div>
 

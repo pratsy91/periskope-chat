@@ -136,70 +136,79 @@ export default function ChatList({
       </div>
       {/* Chat list */}
       <div className="flex-1 overflow-y-auto">
-        {filteredChats.map((chat) => {
-          const members = chatMembers[chat.id] || [];
-          const isGroup = members.length > 2;
+        {filteredChats.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-[#888] p-8">
+            <div className="text-center">
+              <p className="text-lg font-semibold mb-2">No chats yet</p>
+              <p className="text-sm">Click on the <span className="text-[#04904d] font-bold">green button</span> below to start a chat.</p>
+            </div>
+          </div>
+        ) : (
+          filteredChats.map((chat) => {
+            const members = chatMembers[chat.id] || [];
+            const isGroup = members.length > 2;
 
-          return (
-            <div
-              key={chat.id}
-              data-chat-id={chat.id}
-              onClick={() => onSelectChat(chat.id)}
-              className={`p-4 border-b border-[#e6e6e6] cursor-pointer hover:bg-[#f7f8fa] ${
-                selectedChat === chat.id ? "bg-[#f7f8fa]" : ""
-              }`}
-            >
-              <div className="flex gap-3">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-100">
-                  {isGroup ? (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <FaUsers size={24} className="text-gray-500" />
-                    </div>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <FaUserCircle size={32} className="text-gray-500" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-[#222] truncate">{chat.name}</h3>
-                        {chat.last_message && (
-                          <p className="text-sm text-[#888] truncate">{chat.last_message}</p>
+            return (
+              <div
+                key={chat.id}
+                data-chat-id={chat.id}
+                onClick={() => onSelectChat(chat.id)}
+                className={`p-4 border-b border-[#e6e6e6] cursor-pointer hover:bg-[#f7f8fa] ${
+                  selectedChat === chat.id ? "bg-[#f7f8fa]" : ""
+                }`}
+              >
+                <div className="flex gap-3">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+                    {isGroup ? (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FaUsers size={24} className="text-gray-500" />
+                      </div>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FaUserCircle size={32} className="text-gray-500" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-[#222] truncate">{chat.name}</h3>
+                          {chat.last_message && (
+                            <p className="text-sm text-[#888] truncate">{chat.last_message}</p>
+                          )}
+                        </div>
+                        {chat.labels && chat.labels.length > 0 && (
+                          <div className="flex flex-wrap gap-1 justify-end">
+                            {chat.labels.map((label, index) => (
+                              <span
+                                key={index}
+                                className="text-xs px-2 py-0.5 bg-[#e6f4ea] text-[#04904d] rounded-full"
+                              >
+                                {label}
+                              </span>
+                            ))}
+                          </div>
                         )}
                       </div>
-                      {chat.labels && chat.labels.length > 0 && (
-                        <div className="flex flex-wrap gap-1 justify-end">
-                          {chat.labels.map((label, index) => (
-                            <span
-                              key={index}
-                              className="text-xs px-2 py-0.5 bg-[#e6f4ea] text-[#04904d] rounded-full"
-                            >
-                              {label}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex justify-end mt-1">
-                      <span className="text-xs text-[#888] whitespace-nowrap">
-                        {chat.last_opened_at 
-                          ? new Date(chat.last_opened_at).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })
-                          : `${new Date().getDate().toString().padStart(2, '0')}-${new Date().toLocaleString('en-US', { month: 'short' })}-${new Date().getFullYear()}`
-                        }
-                      </span>
+                      <div className="flex justify-end mt-1">
+                        <span className="text-xs text-[#888] whitespace-nowrap">
+                          {chat.last_opened_at 
+                            ? new Date(chat.last_opened_at).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })
+                            : `${new Date().getDate().toString().padStart(2, '0')}-${new Date().toLocaleString('en-US', { month: 'short' })}-${new Date().getFullYear()}`
+                          }
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
       {/* Add Chat Floating Button */}
       <button
