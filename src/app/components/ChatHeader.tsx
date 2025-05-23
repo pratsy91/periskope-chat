@@ -62,14 +62,14 @@ export default function ChatHeader({
       {/* Left avatar and chat info */}
       <div className="flex items-center gap-3">
         {/* Left avatar */}
-        <div className="w-10 h-10 rounded-full overflow-hidden">
+        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
           {isGroup ? (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <FaUsers size={24} />
+            <div className="w-full h-full flex items-center justify-center">
+              <FaUsers size={24} className="text-gray-500" />
             </div>
           ) : (
-            <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-              <FaUserCircle size={32} />
+            <div className="w-full h-full flex items-center justify-center">
+              <FaUserCircle size={32} className="text-gray-500" />
             </div>
           )}
         </div>
@@ -87,10 +87,10 @@ export default function ChatHeader({
             {rightAvatars.map((member) => (
               <div
                 key={member.id}
-                className="w-10 h-10 rounded-full overflow-hidden"
+                className="w-10 h-10 rounded-full overflow-hidden bg-gray-100"
               >
-                <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                  <FaUserCircle size={32} />
+                <div className="w-full h-full flex items-center justify-center">
+                  <FaUserCircle size={32} className="text-gray-500" />
                 </div>
               </div>
             ))}

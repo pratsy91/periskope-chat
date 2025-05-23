@@ -150,13 +150,13 @@ export default function ChatList({
               }`}
             >
               <div className="flex gap-3">
-                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-100">
                   {isGroup ? (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       <FaUsers size={24} className="text-gray-500" />
                     </div>
                   ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center">
                       <FaUserCircle size={32} className="text-gray-500" />
                     </div>
                   )}

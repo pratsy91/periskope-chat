@@ -26,6 +26,12 @@ export function useChats(userId: string) {
             labels (
               name
             )
+          ),
+          chat_members (
+            users (
+              id,
+              username
+            )
           )
         )
       `)
@@ -52,9 +58,19 @@ export function useChats(userId: string) {
         .map((cl: any) => cl.labels?.name)
         .filter(Boolean);
       const cached = cachedMap.get(String(row.chat_id));
+      
+      // Get other members of the chat
+      const otherMembers = (chat?.chat_members || [])
+        .filter((member: any) => member.users.id !== userId)
+        .map((member: any) => member.users.username);
+
+      // For direct chats, use the other person's name
+      const chatName = chat?.name || 
+        (otherMembers.length === 1 ? otherMembers[0] : cached?.name || "Unnamed Chat");
+
       return {
         id: String(row.chat_id),
-        name: chat?.name || cached?.name || "Unnamed Chat",
+        name: chatName,
         last_opened_at: chat?.last_opened_at,
         labels,
       };
