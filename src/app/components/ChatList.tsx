@@ -10,7 +10,8 @@ interface Chat {
   name: string;
   created_at: string;
   last_message?: string;
-  last_message_time?: string;
+  last_opened_at?: string;
+  labels?: string[];
 }
 
 interface User {
@@ -62,6 +63,15 @@ export default function ChatList({
   const [showSearch, setShowSearch] = useState(false);
   const [chatMembers, setChatMembers] = useState<Record<string, ChatMember[]>>({});
   const userId = typeof window !== "undefined" ? localStorage.getItem("userId") : null;
+
+  // Filter chats based on search input
+  const filteredChats = chats.filter(chat => {
+    const searchLower = userSearch.toLowerCase();
+    return (
+      chat.name.toLowerCase().includes(searchLower) ||
+      (chat.labels && chat.labels.some(label => label.toLowerCase().includes(searchLower)))
+    );
+  });
 
   useEffect(() => {
     const fetchChatMembers = async () => {
@@ -126,7 +136,7 @@ export default function ChatList({
       </div>
       {/* Chat list */}
       <div className="flex-1 overflow-y-auto">
-        {chats.map((chat) => {
+        {filteredChats.map((chat) => {
           const members = chatMembers[chat.id] || [];
           const isGroup = members.length > 2;
 
@@ -143,29 +153,48 @@ export default function ChatList({
                 <div className="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden">
                   {isGroup ? (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUsers size={24} />
+                      <FaUsers size={24} className="text-gray-500" />
                     </div>
                   ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                      <FaUserCircle size={32} />
+                      <FaUserCircle size={32} className="text-gray-500" />
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                    <h3 className="font-semibold text-[#222] truncate">{chat.name}</h3>
-                    {chat.last_message_time && (
-                      <span className="text-xs text-[#888] whitespace-nowrap ml-2">
-                        {new Date(chat.last_message_time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                  <div className="flex flex-col">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-[#222] truncate">{chat.name}</h3>
+                        {chat.last_message && (
+                          <p className="text-sm text-[#888] truncate">{chat.last_message}</p>
+                        )}
+                      </div>
+                      {chat.labels && chat.labels.length > 0 && (
+                        <div className="flex flex-wrap gap-1 justify-end">
+                          {chat.labels.map((label, index) => (
+                            <span
+                              key={index}
+                              className="text-xs px-2 py-0.5 bg-[#e6f4ea] text-[#04904d] rounded-full"
+                            >
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex justify-end mt-1">
+                      <span className="text-xs text-[#888] whitespace-nowrap">
+                        {chat.last_opened_at 
+                          ? new Date(chat.last_opened_at).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })
+                          : `${new Date().getDate().toString().padStart(2, '0')}-${new Date().toLocaleString('en-US', { month: 'short' })}-${new Date().getFullYear()}`
+                        }
                       </span>
-                    )}
+                    </div>
                   </div>
-                  {chat.last_message && (
-                    <p className="text-sm text-[#888] truncate">{chat.last_message}</p>
-                  )}
                 </div>
               </div>
             </div>
