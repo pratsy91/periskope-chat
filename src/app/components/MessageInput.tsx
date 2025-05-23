@@ -35,6 +35,9 @@ export default function MessageInput({
           <IoSendSharp size={28} className="text-[#04904d]" />
         </button>
       </div>
+
+     
+
       <div className="flex items-center gap-4 mt-1">
         <input
           type="file"
@@ -64,6 +67,15 @@ export default function MessageInput({
         <button type="button" className="text-[#243445] hover:bg-[#f7f8fa] p-2 rounded-full flex items-center justify-center">
           <FaMicrophone size={20} />
         </button>
+        <div className="flex items-center gap-2 ml-auto bg-white border border-[#e6e6e6] rounded p-2 w-[140px]">
+        <img src="/icon.png" alt="Periskope" className="w-5 h-5" />
+        <span className="text-sm text-[#384555] font-medium">Periskope</span>
+        <span className="ml-auto">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 12L10 8L6 4" stroke="#384555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
+      </div>
       </div>
     </form>
   );

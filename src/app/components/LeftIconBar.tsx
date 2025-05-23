@@ -5,6 +5,9 @@ import { AiFillMessage, AiFillHome } from "react-icons/ai";
 import { HiMegaphone } from "react-icons/hi2";
 import { PiGitFork } from "react-icons/pi";
 import { RiFolderImageFill, RiContactsBookFill, RiLineChartLine } from "react-icons/ri";
+import { TbStarsFilled } from "react-icons/tb";
+import { LuPanelLeftClose } from "react-icons/lu";
+
 
 export default function LeftIconBar() {
   return (
@@ -23,6 +26,14 @@ export default function LeftIconBar() {
       <div className="h-[1px] bg-[#d2d4d6] w-[40px]"></div>
       <span className="text-[#384555]"><GrTask size={22} /></span>
       <span className="text-[#384555]"><IoIosSettings size={22} /></span>
+      <div className="flex-1"></div>
+      <div className="flex flex-col items-center gap-1 text-[#384555] mb-4">
+        <TbStarsFilled size={22} />
+      </div>
+      <div className="flex flex-col items-center gap-1 text-[#384555] mb-4 rotate-180">
+        <LuPanelLeftClose size={22} />
+      </div>
+      
     </nav>
   );
 } 

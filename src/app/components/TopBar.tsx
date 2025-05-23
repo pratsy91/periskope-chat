@@ -4,6 +4,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { LuRefreshCcwDot } from "react-icons/lu";
 import { GoDesktopDownload } from "react-icons/go";
 import { BsStars } from "react-icons/bs";
+import { TbStarsFilled } from "react-icons/tb";
 import { useRef, useEffect } from "react";
 
 interface TopBarProps {
@@ -30,10 +31,11 @@ export default function TopBar({ username, showLogout, onToggleLogout, onLogout 
   }, [showLogout, onToggleLogout]);
 
   return (
+    <>
     <header className="absolute top-0 left-0 w-full h-[56px] bg-white 
     border-b border-[#e6e6e6] flex items-center justify-between px-4 z-20">
       <div className="flex items-center gap-5">
-        <span className="text-[#04904d] text-3xl"><SiGooglemessages /></span>
+        <img src="/icon.png" alt="Logo" className="w-8 h-8" />
         <div className="flex items-center gap-2">
         <span className="text-[#7f8693]"><AiFillMessage size={16} /></span>
         <span className="font-bold text-lg text-[#7f8693]">chats</span>
@@ -87,5 +89,9 @@ export default function TopBar({ username, showLogout, onToggleLogout, onLogout 
         </div>
       </div>
     </header>
+    <div className="fixed bottom-0 left-0 w-full bg-white border-t border-[#e6e6e6] p-3 flex items-center justify-center text-[#384555]">
+      <TbStarsFilled className="mr-2" /> 384555
+    </div>
+    </>
   );
 } 
