@@ -1,4 +1,4 @@
-import { FaUserCircle, FaSearch, FaEllipsisV, FaUsers } from "react-icons/fa";
+import { FaUserCircle, FaSearch, FaEllipsisV, FaUsers, FaArrowLeft } from "react-icons/fa";
 import { useState, useRef, useEffect } from "react";
 import { BsStars } from "react-icons/bs";
 
@@ -10,6 +10,8 @@ interface ChatHeaderProps {
   searchResults?: Array<{ id: string; username: string }>;
   onSelectUser?: (user: { id: string; username: string }) => void;
   onDeleteChat?: () => void;
+  onBack?: () => void;
+  showBackButton?: boolean;
 }
 
 export default function ChatHeader({ 
@@ -19,7 +21,9 @@ export default function ChatHeader({
   onSearchUser,
   searchResults = [],
   onSelectUser,
-  onDeleteChat
+  onDeleteChat,
+  onBack,
+  showBackButton = false
 }: ChatHeaderProps) {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -74,29 +78,41 @@ export default function ChatHeader({
         </div>
       )}
       
-      {/* Left avatar and chat info */}
-      <div className="flex items-center gap-3">
-        {/* Left avatar */}
-        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
-          {isGroup ? (
-            <div className="w-full h-full flex items-center justify-center">
-              <FaUsers size={24} className="text-gray-500" />
-            </div>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <FaUserCircle size={32} className="text-gray-500" />
-            </div>
-          )}
-        </div>
-        <div>
-          <h1 className="font-semibold text-[#222]">{chatName || "Select a chat"}</h1>
-          {userCount > 0 && (
-            <p className="text-xs text-[#888]">{userCount} {userCount === 1 ? 'member' : 'members'}</p>
-          )}
+      {/* Left side with back button and chat info */}
+      <div className="flex items-center gap-3 px-16">
+      {showBackButton && (
+          <button 
+            onClick={onBack}
+            className="lg:hidden flex items-center justify-center text-[#384555] hover:text-[#04904d] p-2 -ml-2"
+            aria-label="Back to chat list"
+          >
+            <FaArrowLeft size={22} />
+          </button>
+        )}
+        <div className="flex items-center gap-3">
+       
+          <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-100">
+            {isGroup ? (
+              <div className="w-full h-full flex items-center justify-center">
+                <FaUsers size={24} className="text-gray-500" />
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <FaUserCircle size={32} className="text-gray-500" />
+              </div>
+            )}
+          </div>
+          <div>
+            <h1 className="font-semibold text-[#222]">{chatName || "Select a chat"}</h1>
+            {userCount > 0 && (
+              <p className="text-xs text-[#888]">{userCount} {userCount === 1 ? 'member' : 'members'}</p>
+            )}
+          </div>
+         
         </div>
       </div>
       {/* Right avatars, search, and options */}
-      <div className="flex items-center gap-2 relative">
+      <div className="flex items-center gap-2 relative max-[768px]:hidden">
         {isGroup && (
           <div className="flex -space-x-2 mr-2">
             {rightAvatars.map((member) => (

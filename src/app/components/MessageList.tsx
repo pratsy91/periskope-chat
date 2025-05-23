@@ -2,6 +2,14 @@ import { useRef, useEffect, useState } from 'react';
 import { FaUserCircle, FaUsers } from "react-icons/fa";
 import { supabase } from '../hooks/useChats';
 
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      source: React.DetailedHTMLProps<React.SourceHTMLAttributes<HTMLSourceElement>, HTMLSourceElement>;
+    }
+  }
+}
+
 interface Message {
   id: string;
   content: string;
@@ -119,38 +127,24 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
   }
 
   return (
-    <div className="flex-1 overflow-y-auto px-8 py-6 bg-[url('/chat-bg.png')] bg-repeat" ref={chatAreaRef}>
+    <div className="flex-1 overflow-y-auto px-2 sm:px-8 py-6 bg-[url('/chat-bg.png')] bg-repeat" ref={chatAreaRef}>
       <div className="flex flex-col gap-4 w-full">
         {messages.map((msg) => {
           const user = users[msg.sender_id];
-          // Convert both IDs to strings and trim any whitespace
-          const senderId = String(msg.sender_id).trim();
-          const currentId = String(currentUserId).trim();
-          const isCurrentUser = senderId === currentId;
+          const isCurrentUser = String(msg.sender_id).trim() === String(currentUserId).trim();
           const displayName = isCurrentUser ? 'You' : (user?.username || 'Unknown User');
-
-          console.log('Message Debug:', {
-            senderId,
-            currentId,
-            isCurrentUser,
-            displayName,
-            rawSenderId: msg.sender_id,
-            rawCurrentId: currentUserId,
-            typeOfSenderId: typeof msg.sender_id,
-            typeOfCurrentId: typeof currentUserId
-          });
 
           return (
             <div key={msg.id} className={`w-full flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
-              <div className={`flex ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} items-end gap-2 max-w-[70%]`}>
-                <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-gray-100">
+              <div className={`flex ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'} items-end gap-2 max-w-[85%] sm:max-w-[70%]`}>
+                <div className="flex-shrink-0 w-6 sm:w-8 h-6 sm:h-8 rounded-full overflow-hidden bg-gray-100">
                   {currentChat?.is_group ? (
                     <div className="w-full h-full flex items-center justify-center">
-                      <FaUsers size={24} className="text-gray-500" />
+                      <FaUsers size={20} className="text-gray-500" />
                     </div>
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <FaUserCircle size={32} className="text-gray-500" />
+                      <FaUserCircle size={24} className="text-gray-500" />
                     </div>
                   )}
                 </div>
@@ -158,8 +152,8 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
                   <div
                     className={
                       isCurrentUser
-                        ? "bg-[#e7f9ef] rounded-lg px-4 py-2 shadow text-[#222] text-sm"
-                        : "bg-white rounded-lg px-4 py-2 shadow text-[#222] text-sm"
+                        ? "bg-[#e7f9ef] rounded-lg px-3 sm:px-4 py-2 shadow text-[#222] text-sm"
+                        : "bg-white rounded-lg px-3 sm:px-4 py-2 shadow text-[#222] text-sm"
                     }
                   >
                     {!isCurrentUser && (
@@ -167,9 +161,9 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
                     )}
                     {msg.attachment_url ? (
                       msg.attachment_type?.startsWith('image/') ? (
-                        <img src={msg.attachment_url} alt="attachment" className="max-w-xs max-h-60 rounded" />
+                        <img src={msg.attachment_url} alt="attachment" className="max-w-[200px] sm:max-w-xs max-h-40 sm:max-h-60 rounded" />
                       ) : msg.attachment_type?.startsWith('video/') ? (
-                        <video controls className="max-w-xs max-h-60 rounded">
+                        <video controls className="max-w-[200px] sm:max-w-xs max-h-40 sm:max-h-60 rounded">
                           <source src={msg.attachment_url} type={msg.attachment_type} />
                           Your browser does not support the video tag.
                         </video>
@@ -179,7 +173,7 @@ export default function MessageList({ messages, currentUserId, isLoading, curren
                         </a>
                       )
                     ) : (
-                      msg.content
+                      <div className="break-words">{msg.content}</div>
                     )}
                     <div className={`text-xs text-[#888] mt-1${isCurrentUser ? " text-right" : ""}`}>
                       {msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}

@@ -50,6 +50,8 @@ export default function ChatsPage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [showChatList, setShowChatList] = useState(true);
+
   useEffect(() => {
     if (selectedChat) {
       setMessagesLoading(true);
@@ -523,64 +525,84 @@ export default function ChatsPage() {
     setSelectedChat(null);
   }
 
+  const handleSelectChat = (chatId: string) => {
+    setSelectedChat(chatId);
+    // Hide chat list on mobile when a chat is selected
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setShowChatList(false);
+    }
+  };
+
   return (
-    <div className="relative h-screen w-screen bg-[#f7f8fa] font-sans overflow-hidden">
-      <TopBar
-        username={username}
+    <main className="flex flex-col h-screen relative overflow-hidden">
+      <TopBar 
+        username={username} 
         showLogout={showLogout}
-        onToggleLogout={() => setShowLogout(v => !v)}
+        onToggleLogout={() => setShowLogout(!showLogout)}
         onLogout={handleLogout}
       />
-      
-      <LeftIconBar />
-      <RightIconBar />
-
-      {/* Main content area */}
-      <div className="absolute top-[56px] left-[56px] right-[56px] bottom-0 flex">
-        <ChatList
-          chats={chats}
-          selectedChat={selectedChat}
-          onSelectChat={setSelectedChat}
-          onUserSearch={handleUserSearch}
-          userSearch={userSearch}
-          userResults={userResults}
-          searching={searching}
-          onStartChat={startChatWithUser}
-          onShowAddChat={() => setShowAddChatModal(true)}
-        />
+      <div className="flex flex-1 relative pt-[56px] overflow-hidden">
+        <LeftIconBar />
         
-        {/* Main chat area */}
-        <main className="flex-1 flex flex-col">
-          {selectedChat && chats.find(c => c.id === selectedChat) && (
-            <ChatHeader
-              chatName={chats.find(c => c.id === selectedChat)?.name}
-              userCount={chatMembers[selectedChat]?.length || 0}
-              members={chatMembers[selectedChat] || []}
-              onSearchUser={handleHeaderUserSearch}
-              searchResults={headerSearchResults}
-              onSelectUser={handleAddUserToChat}
+        {/* Container for chat list and main chat area */}
+        <div className="flex flex-1 relative">
+          {/* Chat list */}
+          <div className={`${showChatList ? 'translate-x-0' : '-translate-x-full'} 
+            lg:translate-x-0 transition-transform duration-300 ease-in-out
+            fixed lg:relative left-[56px] lg:left-0 h-[calc(100%-56px)] lg:h-full z-30 lg:z-auto
+            bg-white lg:bg-transparent w-full lg:w-[35%]`}>
+            <ChatList
+              chats={chats}
+              selectedChat={selectedChat}
+              onSelectChat={handleSelectChat}
+              onUserSearch={handleUserSearch}
+              userSearch={userSearch}
+              userResults={userResults}
+              searching={searching}
+              onStartChat={startChatWithUser}
+              onShowAddChat={() => setShowAddChatModal(true)}
               onDeleteChat={handleDeleteChat}
             />
-          )}
-          
-          <MessageList
-            messages={messages}
-            currentUserId={userId || ''}
-            isLoading={messagesLoading}
-            currentChat={selectedChat ? chats.find(c => c.id === selectedChat) || null : null}
-          />
+          </div>
 
-          {selectedChat && (
-            <MessageInput
-              message={message}
-              onMessageChange={e => setMessage(e.target.value)}
-              onSend={handleSend}
-              onFileChange={handleFileChange}
-            />
-          )}
-        </main>
+          {/* Main chat area */}
+          <div className={`flex-1 relative flex flex-col ${!showChatList ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'} 
+            transition-transform duration-300 ease-in-out fixed lg:relative inset-0 lg:inset-auto bg-white overflow-hidden`}>
+            {selectedChat && chats.find(c => c.id === selectedChat) && (
+              <ChatHeader
+                chatName={chats.find(c => c.id === selectedChat)?.name}
+                userCount={chatMembers[selectedChat]?.length || 0}
+                members={chatMembers[selectedChat] || []}
+                onSearchUser={handleHeaderUserSearch}
+                searchResults={headerSearchResults}
+                onSelectUser={handleAddUserToChat}
+                onDeleteChat={handleDeleteChat}
+                onBack={() => setShowChatList(true)}
+                showBackButton={!showChatList}
+              />
+            )}
+            
+            <div className="flex-1 overflow-hidden flex flex-col">
+              <MessageList
+                messages={messages}
+                currentUserId={userId || ''}
+                isLoading={messagesLoading}
+                currentChat={selectedChat ? chats.find(c => c.id === selectedChat) || null : null}
+              />
+
+              {selectedChat && (
+                <MessageInput
+                  message={message}
+                  onMessageChange={e => setMessage(e.target.value)}
+                  onSend={handleSend}
+                  onFileChange={handleFileChange}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+        <RightIconBar />
       </div>
-
       {showAddChatModal && (
         <AddChatModal
           addChatType={addChatType}
@@ -612,6 +634,6 @@ export default function ChatsPage() {
           onUserSearch={handleAddChatUserSearch}
         />
       )}
-    </div>
+    </main>
   );
 }
