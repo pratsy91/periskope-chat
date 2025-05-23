@@ -4,6 +4,8 @@ import { AiFillMessage } from "react-icons/ai";
 import { LuRefreshCcwDot } from "react-icons/lu";
 import { GoDesktopDownload } from "react-icons/go";
 import { BsStars } from "react-icons/bs";
+import { useRef, useEffect } from "react";
+
 interface TopBarProps {
   username: string | null;
   showLogout: boolean;
@@ -12,6 +14,21 @@ interface TopBarProps {
 }
 
 export default function TopBar({ username, showLogout, onToggleLogout, onLogout }: TopBarProps) {
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showLogout) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(event.target as Node)) {
+        onToggleLogout();
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showLogout, onToggleLogout]);
+
   return (
     <header className="absolute top-0 left-0 w-full h-[56px] bg-white 
     border-b border-[#e6e6e6] flex items-center justify-between px-4 z-20">
@@ -52,20 +69,22 @@ export default function TopBar({ username, showLogout, onToggleLogout, onLogout 
           <BsStars size={18} className="text-[#efbf00]"/>
           <FaList size={18} />
         </div>
-        <span className="text-[#888] cursor-pointer ml-2" onClick={onToggleLogout}>
-          <FaUserCircle size={28} />
-        </span>
-        {showLogout && (
-          <div className="absolute right-0 top-10 bg-white border border-[#e6e6e6] rounded shadow p-2 z-30 min-w-[120px] flex flex-col items-end">
-            <div className="text-xs text-[#888] mb-2 px-2">{username}</div>
-            <button
-              onClick={onLogout}
-              className="text-red-500 hover:bg-[#f7f8fa] px-3 py-1 rounded text-sm w-full text-right"
-            >
-              Logout
-            </button>
-          </div>
-        )}
+        <div ref={avatarRef} style={{ display: "inline-block", position: "relative" }} className="mb-6">
+          <span className="text-[#888] cursor-pointer ml-2 " onClick={onToggleLogout}>
+            <FaUserCircle size={28} />
+          </span>
+          {showLogout && (
+            <div className="absolute right-0 top-14 bg-white border border-[#e6e6e6] rounded shadow p-2 z-30 min-w-[120px] flex flex-col items-end">
+              <div className="text-xs text-[#888] mb-2 px-2">{username}</div>
+              <button
+                onClick={onLogout}
+                className="text-red-500 hover:bg-[#f7f8fa] px-3 py-1 rounded text-sm w-full text-right"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import { FaUserCircle, FaSearch, FaEllipsisV, FaUsers } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BsStars } from "react-icons/bs";
 
 interface ChatHeaderProps {
@@ -49,6 +49,21 @@ export default function ChatHeader({
     setSearchQuery("");
     setShowSearch(false);
   };
+
+  // Ref and effect for click-outside-to-close on options dropdown
+  const optionsRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!showOptions) return;
+    function handleClickOutside(event: MouseEvent) {
+      if (optionsRef.current && !optionsRef.current.contains(event.target as Node)) {
+        setShowOptions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showOptions]);
 
   return (
     <header className="h-[56px] border-b border-[#e6e6e6] bg-white flex items-center justify-between px-4">
@@ -157,7 +172,7 @@ export default function ChatHeader({
         </button>
         {/* Options dropdown */}
         {showOptions && (
-          <div className="absolute right-0 top-10 bg-white border border-[#e6e6e6] rounded shadow p-2 z-30 min-w-[120px] flex flex-col items-end">
+          <div ref={optionsRef} className="absolute right-0 top-10 bg-white border border-[#e6e6e6] rounded shadow p-2 z-30 min-w-[120px] flex flex-col items-end">
             <button
               onClick={() => { setShowDeleteConfirm(true); setShowOptions(false); }}
               className="text-red-500 hover:bg-[#f7f8fa] px-3 py-1 rounded text-sm w-full text-right"

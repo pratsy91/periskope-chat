@@ -12,7 +12,8 @@ export function useChats(userId: string) {
   
   // Expose a refresh function
   const refreshChats = async () => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || !userId) return;
+    console.log('Refreshing chats for userId:', userId);
     
     console.log('Refreshing chats...');
     const { data, error } = await supabase
@@ -97,8 +98,10 @@ export function useChats(userId: string) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    // Clear chats state when userId changes
+    setChats([]);
     
-    // Load from IndexedDB first
     getChats().then(localChats => {
       if (localChats.length > 0) {
         setChats(localChats);

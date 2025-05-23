@@ -35,9 +35,13 @@ export default function ChatsPage() {
   const [headerSearching, setHeaderSearching] = useState(false);
   const [directName, setDirectName] = useState("");
   const [label, setLabel] = useState("");
-  const userId = typeof window !== "undefined" ? String(localStorage.getItem("userId")) : null;
-  const username = typeof window !== "undefined" ? localStorage.getItem("username") : null;
-  const { chats, refreshChats } = useChats(userId || "");
+  const [userId, setUserId] = useState(() =>
+    typeof window !== "undefined" ? String(localStorage.getItem("userId") || "") : ""
+  );
+  const [username, setUsername] = useState(() =>
+    typeof window !== "undefined" ? localStorage.getItem("username") || "" : ""
+  );
+  const { chats, refreshChats } = useChats(userId);
   const chatListRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<any[]>([]);
@@ -156,6 +160,28 @@ export default function ChatsPage() {
     }
   }, [selectedChat]);
 
+  // Listen for changes to localStorage (e.g., after login/signup)
+  useEffect(() => {
+    const handleStorage = () => {
+      setUserId(localStorage.getItem("userId") || "");
+      setUsername(localStorage.getItem("username") || "");
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
+  useEffect(() => {
+    // Clear messages and selected chat when userId changes
+    setMessages([]);
+    setSelectedChat(null);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!selectedChat) {
+      setMessages([]);
+    }
+  }, [selectedChat]);
+
   async function handleSend(e: React.FormEvent) {
     e.preventDefault();
     if (!message.trim() || !selectedChat || !userId) {
@@ -170,6 +196,8 @@ export default function ChatsPage() {
   function handleLogout() {
     if (typeof window !== "undefined") {
       localStorage.clear();
+      setUserId("");
+      setUsername("");
       router.replace("/login");
     }
   }
@@ -557,6 +585,7 @@ export default function ChatsPage() {
           addChatUserSearch={addChatUserSearch}
           setAddChatUserSearch={setAddChatUserSearch}
           addChatUserResults={addChatUserResults}
+          setAddChatUserResults={setAddChatUserResults}
           selectedAddChatUsers={selectedAddChatUsers}
           onSelectAddChatUser={handleSelectAddChatUser}
           onRemoveAddChatUser={handleRemoveAddChatUser}

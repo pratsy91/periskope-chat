@@ -8,6 +8,42 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Function to clear IndexedDB data
+async function clearIndexedDB() {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    // Clear localStorage first
+    localStorage.removeItem('messages');
+    localStorage.removeItem('chats');
+    
+    // Delete the IndexedDB database
+    const dbName = 'periskope-chat';
+    const request = indexedDB.deleteDatabase(dbName);
+    
+    // Wait for the database to be deleted
+    await new Promise<void>((resolve, reject) => {
+      request.onsuccess = () => {
+        console.log('IndexedDB cleared successfully');
+        resolve();
+      };
+      
+      request.onerror = (event) => {
+        console.error('Error clearing IndexedDB:', event);
+        reject(event);
+      };
+
+      // Add a timeout to prevent hanging
+      setTimeout(() => {
+        resolve();
+      }, 1000);
+    });
+  } catch (error) {
+    console.error('Error clearing IndexedDB:', error);
+    // Don't throw the error, just log it and continue
+  }
+}
+
 export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -52,44 +88,54 @@ export default function Login() {
     }
 
     if (isSignup) {
-      // Check if username already exists
-      const { data: existingUser, error: checkError } = await supabase
-        .from("users")
-        .select("id")
-        .eq("username", username)
-        .single();
+      try {
+        // Check if username already exists
+        const { data: existingUser, error: checkError } = await supabase
+          .from("users")
+          .select("id")
+          .eq("username", username)
+          .single();
 
-      if (checkError && checkError.code !== 'PGRST116') {
-        setError("Error checking username");
+        if (checkError && checkError.code !== 'PGRST116') {
+          setError("Error checking username");
+          setLoading(false);
+          return;
+        }
+
+        if (existingUser) {
+          setError("Username already exists. Please login instead.");
+          setLoading(false);
+          return;
+        }
+
+        // Create new user
+        const { data: newUser, error: insertError } = await supabase
+          .from("users")
+          .insert([{ username, password }])
+          .select("id")
+          .single();
+
+        if (insertError || !newUser) {
+          setError("Could not create account. Try again.");
+          setLoading(false);
+          return;
+        }
+
+        // Clear all local data for new user BEFORE setting user info
+        await clearIndexedDB();
+
+        // Store user info after clearing IndexedDB
+        if (typeof window !== "undefined") {
+          localStorage.setItem("loggedIn", "true");
+          localStorage.setItem("userId", newUser.id);
+          localStorage.setItem("username", username);
+          window.location.href = "/"; // Force a full reload
+          return;
+        }
+      } catch (error) {
+        console.error('Error during signup:', error);
+        setError("An error occurred during signup. Please try again.");
         setLoading(false);
-        return;
-      }
-
-      if (existingUser) {
-        setError("Username already exists. Please login instead.");
-        setLoading(false);
-        return;
-      }
-
-      // Create new user
-      const { data: newUser, error: insertError } = await supabase
-        .from("users")
-        .insert([{ username, password }])
-        .select("id")
-        .single();
-
-      if (insertError || !newUser) {
-        setError("Could not create account. Try again.");
-        setLoading(false);
-        return;
-      }
-
-      // Store user info and redirect
-      if (typeof window !== "undefined") {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userId", newUser.id);
-        localStorage.setItem("username", username);
-        router.replace("/");
       }
     } else {
       // Login flow

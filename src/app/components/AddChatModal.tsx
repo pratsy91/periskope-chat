@@ -9,10 +9,11 @@ interface AddChatModalProps {
   directName: string;
   setDirectName: (name: string) => void;
   label: string;
-  setLabel: (label: string) => void;
+  setLabel: (name: string) => void;
   addChatUserSearch: string;
   setAddChatUserSearch: (search: string) => void;
   addChatUserResults: any[];
+  setAddChatUserResults: (results: any[]) => void;
   selectedAddChatUsers: any[];
   onSelectAddChatUser: (user: any) => void;
   onRemoveAddChatUser: (userId: string) => void;
@@ -33,6 +34,7 @@ export default function AddChatModal({
   addChatUserSearch,
   setAddChatUserSearch,
   addChatUserResults,
+  setAddChatUserResults,
   selectedAddChatUsers,
   onSelectAddChatUser,
   onRemoveAddChatUser,
@@ -41,6 +43,7 @@ export default function AddChatModal({
   onUserSearch,
 }: AddChatModalProps) {
   const [directNameTouched, setDirectNameTouched] = useState(false);
+  const [showDirectChatMessage, setShowDirectChatMessage] = useState(false);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAddChatUserSearch(e.target.value);
@@ -54,6 +57,19 @@ export default function AddChatModal({
     }
     onCreateAddChat();
     setDirectNameTouched(false);
+  };
+
+  const handleSelectUser = (user: any) => {
+    if (addChatType === 'direct' && selectedAddChatUsers.length > 0) {
+      setShowDirectChatMessage(true);
+      // Hide message after 3 seconds
+      setTimeout(() => setShowDirectChatMessage(false), 3000);
+      return;
+    }
+    onSelectAddChatUser(user);
+    // Clear search results after selection
+    setAddChatUserSearch('');
+    setAddChatUserResults([]);
   };
 
   return (
@@ -109,12 +125,19 @@ export default function AddChatModal({
           value={addChatUserSearch}
           onChange={handleSearch}
         />
+        {showDirectChatMessage && (
+          <div className="max-w-[280px] mx-auto mb-3">
+            <p className="text-xs text-red-500 text-center">
+              Only one user can be added for direct chat
+            </p>
+          </div>
+        )}
         <div className="max-w-[280px] mx-auto max-h-32 overflow-y-auto mb-3">
           {addChatUserResults.map(user => (
             <div
               key={user.id}
               className={`p-2 cursor-pointer hover:bg-[#f7f8fa] text-sm flex items-center ${selectedAddChatUsers.some(u => u.id === user.id) ? 'bg-[#e7f9ef]' : ''}`}
-              onClick={() => onSelectAddChatUser(user)}
+              onClick={() => handleSelectUser(user)}
             >
               <span className="text-[#25d366] mr-2"><FaUserCircle size={18} /></span>
               {user.username}
@@ -142,6 +165,17 @@ export default function AddChatModal({
             </span>
           </div>
         )}
+        {addChatType === 'direct' && (
+          <div className="max-w-[280px] mx-auto mb-3">
+            <p className="text-xs text-[#888] text-center">
+              {selectedAddChatUsers.length === 0 
+                ? "Select one user to start a direct chat"
+                : !directName 
+                ? "Enter a chat name to start the chat"
+                : "Ready to start direct chat"}
+            </p>
+          </div>
+        )}
         {addChatType === 'group' && (
           <div className="max-w-[280px] mx-auto mb-3">
             <p className="text-xs text-[#888] text-center">
@@ -156,9 +190,9 @@ export default function AddChatModal({
           </div>
         )}
         <button
-          className="w-full max-w-[280px] mx-auto bg-[#25d366] hover:bg-[#1fa855] text-white py-2 rounded font-semibold mt-2 block disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full max-w-[280px] mx-auto bg-[#25d366] hover:bg-[#1fa855] text-white py-2 rounded font-semibold mt-2 block"
           onClick={handleCreate}
-          disabled={addChatType === 'group' ? (selectedAddChatUsers.length < 2 || !groupName) : (selectedAddChatUsers.length !== 1 || !directName)}
+          disabled={addChatType === 'group' ? (selectedAddChatUsers.length < 2 || !groupName) : !directName}
         >
           {addChatType === 'group' ? 'Create Group' : 'Start Direct Chat'}
         </button>
