@@ -123,7 +123,7 @@ export default function ChatHeader({
           <div className="relative">
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search users to add..."
               value={searchQuery}
               onChange={handleSearch}
               className="px-3 py-1 border border-[#e6e6e6] rounded text-sm w-[200px]"
